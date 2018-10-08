@@ -1,0 +1,47 @@
+version: "3"
+
+services:
+  gitlab:
+    image: "gitlab/gitlab-ce:11.3.0-ce.0"
+#    hostname: 'localhost:'
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        mattermost_external_url "http://13.112.133.123:8065"
+        external_url "http://localhost"
+#        mattermost['env'] = {
+#          'MM_EMAILSETTINGS_SMTPSERVER' => 'mailhost.example.com',
+#          'MM_EMAILSETTINGS_SMTPPORT' => '25',
+#          'MM_EMAILSETTINGS_FEEDBACKNAME' => 'GitLab Mattermost',
+#          'MM_EMAILSETTINGS_FEEDBACKEMAIL' => 'mattermost@example.com'
+#        }
+    ports:
+      - '80:80'
+      - "443:443"
+#      - "22:22"
+    restart: always
+
+  gitlab-runner:
+    image: "gitlab/gitlab-runner:v11.3.0"
+    depends_on:
+      - "gitlab"
+    restart: always
+
+  mattermost:
+    image: "mattermost/mattermost-preview:5.3.1"
+    ports:
+      - "8065:8065"
+    restart: always
+
+  nexus:
+    image: "sonatype/nexus3:3.13.0"
+    ports:
+      - "8081:8081"
+    restart: always
+
+  mysql:
+    image: "mysql:5.7"
+    ports:
+      - "3306:3306"
+    environment :
+      MYSQL_ROOT_PASSWORD : root123
+    restart : always
